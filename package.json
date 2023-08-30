@@ -1,0 +1,15 @@
+{
+  "name": "recover-ndvi-baseline",
+  "version": "1.0.0",
+  "description": "Web mapping applications allowing users to view current and historical NDVI data in the Western United States",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Cole Rosner",
+  "license": "ISC",
+  "dependencies": {
+    "@arcgis/core": "^4.27.6",
+    "vite": "^4.4.9"
+  }
+}
