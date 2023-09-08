@@ -24,31 +24,38 @@
       require([
         "esri/Map",
         "esri/views/MapView",
-        "esri/layers/ImageryLayer"
-      ], (Map, MapView, ImageryLayer) => {
-        /********************
-         * Create image layer
-         ********************/
-        
-        const layer = new ImageryLayer({
-          url: "https://giscenter.rdc.isu.edu/server/rest/services/RECOVER/NDVI_Baseline/ImageServer"
-        });
+        "esri/layers/ImageryLayer",
+        "esri/layers/support/RasterFunction"
+      ], (Map, MapView, ImageryLayer, RasterFunction) => {
+        const imagePopupTemplate = {
+          title: "Data from Landsat 8",
+          content: `
+            Values as rendered: <b>{Raster.ServicePixelValue} </b>
+            `
+        };
 
-        /**************************
-         * Add image layer to map
-         *************************/
-
-        const map = new Map({
-          basemap: "gray-vector",
-          layers: [layer]
-        });
+        const map = new Map();
 
         const view = new MapView({
           container: "viewDiv",
           map: map,
           center: [-112.433096, 42.861323],
-          zoom: 6
+          scale: 300000 // need scale property instead of zoom since there is no basemap
         });
+
+        const serviceRFT = new RasterFunction({
+          functionName: "NDVI Raw",
+          variableName: "Raster"
+        });
+
+        const imageryLayer = new ImageryLayer({
+          url: "https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer",
+          format: "lerc",
+          rasterFunction: serviceRFT,
+          popupTemplate: imagePopupTemplate
+        });
+        map.add(imageryLayer);
+        
       });
     </script>
   </head>
