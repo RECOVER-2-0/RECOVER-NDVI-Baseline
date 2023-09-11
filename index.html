@@ -48,7 +48,7 @@
         const map = new Map();
 
         const view = new MapView({
-          container: "viewDiv",
+          container: document.getElementById("viewDiv"),
           map: map,
           center: [-112.433096, 42.861323],
           scale: 300000 // need scale property instead of zoom since there is no basemap
@@ -81,6 +81,6 @@
       <div id="titleText">NDVI Values</div>
       <div>Source: <a href="https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer">Landsat 8-9 Normalized Difference Vegetation Index (NDVI) Raw</a></div>
     </div>
-    <div id="infoDiv" class="esri-widget">Hello!3-</div>
+    <div id="infoDiv" class="esri-widget">NDVI Values go here</div>
   </body>
 </html>
