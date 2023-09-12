@@ -83,7 +83,8 @@
               console.info("Stats: ", stats);
 
               console.log(`Average pixel value within 1 kms of click is: ${stats.mean.toFixed(5)}`);
-              document.getElementById("infoDiv").innerHTML += `<br>Average pixel value within 1 km of click is: ${stats.mean.toFixed(5)}`;
+              document.getElementById("infoDiv").innerHTML = `Average pixel value within 1 km of click is: ${stats.mean.toFixed(5)}`;
+              
             }).catch(error => {
               console.error(error.message);
             });
