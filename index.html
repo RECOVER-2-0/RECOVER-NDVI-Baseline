@@ -84,7 +84,7 @@
 
               console.log(`Average pixel value within 1 kms of click is: ${stats.mean.toFixed(5)}`);
               document.getElementById("infoDiv").innerHTML = `Average pixel value within 1 km of click is: ${stats.mean.toFixed(5)}`;
-              
+
             }).catch(error => {
               console.error(error.message);
             });
@@ -105,6 +105,6 @@
       <div id="titleText">NDVI Values</div>
       <div>Source: <a href="https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer">Landsat 8-9 Normalized Difference Vegetation Index (NDVI) Raw</a></div>
     </div>
-    <div id="infoDiv" class="esri-widget">NDVI Values go here</div>
+    <div id="infoDiv" class="esri-widget">Click the map to get average NDVI</div>
   </body>
 </html>
