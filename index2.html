@@ -43,9 +43,15 @@
           ImageryLayer, RasterFunction,
           ImageHistogramParameters) => {
 
+        const serviceRFT = new RasterFunction({
+          functionName: "NDVI Raw",
+          variableName: "Raster"
+        });
 
         const imageryLayer = new ImageryLayer({
-          url: "https://giscenter.rdc.isu.edu/server/rest/services/RECOVER/NDVI_Baseline/ImageServer"
+          url: "https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer",
+          format: "lerc",
+          rasterFunction: serviceRFT
         });
 
         var view = new MapView({
@@ -56,6 +62,33 @@
           }),
           zoom: 12,
           center: [-112.433096, 42.861323]
+        });
+
+        view.when(()=>{
+          view.on('click', clickEvt=>{
+
+            const buffer = geometryEngine.geodesicBuffer(clickEvt.mapPoint, 1, 'kilometers');
+
+            const params = new ImageHistogramParameters({
+              geometry: buffer,
+              mosaicRule: imageryLayer.mosaicRule
+            });
+
+            imageryLayer.computeStatisticsHistograms(params).then((response)=> {
+
+              const histogram = response.histograms[0];
+              console.info("Histogram: ", histogram);
+
+              const stats = response.statistics[0];
+              console.info("Stats: ", stats);
+
+              console.log(`Average pixel value within 1 kms of click is: ${stats.mean.toFixed(5)}`);
+              document.getElementById("infoDiv").innerHTML = `Average pixel value within 1 km of click is: ${stats.mean.toFixed(5)}`;
+
+            }).catch(error => {
+              console.error(error.message);
+            });
+          });
         });
 
         view.ui.add("titleDiv", "top-right");
