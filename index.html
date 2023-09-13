@@ -35,17 +35,21 @@
       require([
         "esri/Map",
         "esri/views/MapView",
-        "esri/geometry/geometryEngine",
         "esri/layers/ImageryLayer",
-        "esri/layers/support/RasterFunction",
-        "esri/rest/support/ImageHistogramParameters"
-      ], (Map, MapView, geometryEngine, 
-          ImageryLayer, RasterFunction,
-          ImageHistogramParameters) => {
+        "esri/layers/support/RasterFunction"
+      ], (Map, MapView, ImageryLayer, RasterFunction) => {
 
+        const serviceRFT = new RasterFunction({
+          functionName: "None", 
+          variableName: "Raster"
+        });
 
         const imageryLayer = new ImageryLayer({
-          url: "https://giscenter.rdc.isu.edu/server/rest/services/RECOVER/NDVI_Baseline/ImageServer"
+          url: "https://giscenter.rdc.isu.edu/server/rest/services/RECOVER/NDVI_Baseline/ImageServer",
+          popupTemplate: {
+            title: "Pixel Value",
+            content: "{Raster.ServicePixelValue} is the pixel Value"
+          }
         });
 
         var view = new MapView({
@@ -54,7 +58,7 @@
             basemap: "dark-gray-vector",
             layers: [imageryLayer]
           }),
-          zoom: 12,
+          zoom: 5,
           center: [-112.433096, 42.861323]
         });
 
