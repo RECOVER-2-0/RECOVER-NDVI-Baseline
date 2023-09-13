@@ -35,21 +35,23 @@
       require([
         "esri/Map",
         "esri/views/MapView",
+        "esri/geometry/geometryEngine",
         "esri/layers/ImageryLayer",
-        "esri/layers/support/RasterFunction"
-      ], (Map, MapView, ImageryLayer, RasterFunction) => {
+        "esri/layers/support/RasterFunction",
+        "esri/rest/support/ImageHistogramParameters"
+      ], (Map, MapView, geometryEngine, 
+          ImageryLayer, RasterFunction,
+          ImageHistogramParameters) => {
 
         const serviceRFT = new RasterFunction({
-          functionName: "None", 
+          functionName: "NDVI Raw",
           variableName: "Raster"
         });
 
         const imageryLayer = new ImageryLayer({
-          url: "https://giscenter.rdc.isu.edu/server/rest/services/RECOVER/NDVI_Baseline/ImageServer",
-          popupTemplate: {
-            title: "Pixel Value",
-            content: "{Raster.ServicePixelValue} is the pixel Value"
-          }
+          url: "https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer",
+          format: "lerc",
+          rasterFunction: serviceRFT
         });
 
         var view = new MapView({
@@ -58,8 +60,35 @@
             basemap: "dark-gray-vector",
             layers: [imageryLayer]
           }),
-          zoom: 5,
+          zoom: 12,
           center: [-112.433096, 42.861323]
+        });
+
+        view.when(()=>{
+          view.on('click', clickEvt=>{
+
+            const buffer = geometryEngine.geodesicBuffer(clickEvt.mapPoint, 1, 'kilometers');
+
+            const params = new ImageHistogramParameters({
+              geometry: buffer,
+              mosaicRule: imageryLayer.mosaicRule
+            });
+
+            imageryLayer.computeStatisticsHistograms(params).then((response)=> {
+
+              const histogram = response.histograms[0];
+              console.info("Histogram: ", histogram);
+
+              const stats = response.statistics[0];
+              console.info("Stats: ", stats);
+
+              console.log(`Average pixel value within 1 kms of click is: ${stats.mean.toFixed(5)}`);
+              document.getElementById("infoDiv").innerHTML = `Average pixel value within 1 km of click is: ${stats.mean.toFixed(5)}`;
+
+            }).catch(error => {
+              console.error(error.message);
+            });
+          });
         });
 
         view.ui.add("titleDiv", "top-right");
@@ -73,7 +102,7 @@
   <body>
     <div id="viewDiv"></div>
     <div id="titleDiv" class="esri-widget">
-      <div id="titleText">NDVI Drill Down</div>
+      <div id="titleText">NDVI Values</div>
       <div>Source: <a href="https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer">Landsat 8-9 Normalized Difference Vegetation Index (NDVI) Raw</a></div>
     </div>
     <div id="infoDiv" class="esri-widget">Click the map to get average NDVI</div>
