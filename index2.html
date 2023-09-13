@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no" />
+    <title>RECOVER NDVI Baseline</title>
+    <link rel="icon" type="image/x-icon" href="https://www.isu.edu/media/top-level/images/favicon.ico">
+    <link rel="stylesheet" href="https://js.arcgis.com/4.27/esri/themes/light/main.css" />
+    <script src="https://js.arcgis.com/4.27/"></script>
+
+    <style>
+      html,
+      body,
+      #viewDiv {
+        padding: 0;
+        margin: 0;
+        height: 100%;
+        width: 100%;
+      }
+
+      #titleDiv, #infoDiv {
+        padding: 10px;
+        width: 320px;
+      }
+
+      #titleText {
+        font-size: 20pt;
+        font-weight: 30;
+        padding-bottom: 10px;
+      }
+    </style>
+
+    <script>
+      require([
+        "esri/Map",
+        "esri/views/MapView",
+        "esri/geometry/geometryEngine",
+        "esri/layers/ImageryLayer",
+        "esri/layers/support/RasterFunction",
+        "esri/rest/support/ImageHistogramParameters"
+      ], (Map, MapView, geometryEngine, 
+          ImageryLayer, RasterFunction,
+          ImageHistogramParameters) => {
+
+
+        const imageryLayer = new ImageryLayer({
+          url: "https://giscenter.rdc.isu.edu/server/rest/services/RECOVER/NDVI_Baseline/ImageServer"
+        });
+
+        var view = new MapView({
+          container: document.getElementById("viewDiv"),
+          map: new Map({
+            basemap: "dark-gray-vector",
+            layers: [imageryLayer]
+          }),
+          zoom: 12,
+          center: [-112.433096, 42.861323]
+        });
+
+        view.ui.add("titleDiv", "top-right");
+        const infoDiv = document.getElementById("infoDiv");
+        view.ui.add(infoDiv, "top-right");
+        
+      });
+    </script>
+  </head>
+
+  <body>
+    <div id="viewDiv"></div>
+    <div id="titleDiv" class="esri-widget">
+      <div id="titleText">NDVI Values</div>
+      <div>Source: <a href="https://landsat2.arcgis.com/arcgis/rest/services/Landsat8_Views/ImageServer">Landsat 8-9 Normalized Difference Vegetation Index (NDVI) Raw</a></div>
+    </div>
+    <div id="infoDiv" class="esri-widget">Click the map to get average NDVI</div>
+  </body>
+</html>
